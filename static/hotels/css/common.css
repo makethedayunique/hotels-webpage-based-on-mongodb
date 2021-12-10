@@ -1,0 +1,32 @@
+.pagination {
+    display: inline-block;
+  }
+  
+.pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+/* ==============Dropdown Submenu CSS=========================== */
+.dropdown-submenu {
+    position: relative;
+}
+  
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+  
+.navbar-nav li:hover > ul.dropdown-menu {
+    display: block;
+}
