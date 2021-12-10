@@ -1,0 +1,89 @@
+{% extends "hotels/base.html" %}
+
+{% load static %}
+
+{% block header %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li>ROOMS</li>
+            <li id="id_country_li" class="active">{{ country }}</li>
+            <li id="id_city_li" class="active">{{ city }}</li>
+        </ol>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% block products_list %}
+        {% endblock %}
+        <div class="col-md-3 grid-details">
+            <div class="grid-addon">
+                <section class="sky-form" id="id-property-checkboxes">
+                    <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>PROPERTY TYPE</h4>
+                    <div class="row row1 scroll-pane">
+                        <div class="col col-4">
+                            {% for t in feature_grid.property_type %}
+                            <label class="checkbox"><input type="checkbox" name="checkbox" onclick="featureClick()"><i></i>{{ t }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+                <section class="sky-form" id="id-prices-checkboxes">
+                    <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>PRICES</h4>
+                    <div class="row row1 scroll-pane">
+                        <div class="col col-4">
+                            {% for price in feature_grid.price %}
+                            <label class="checkbox"><input type="checkbox" name="checkbox" onclick="featureClick()"><i></i>{{ price }}</label>
+                            {% endfor %}
+                        <!-- checked example -->
+                            <!-- <label class="checkbox"><input type="checkbox" name="checkbox" checked=""><i></i>40% - 50% (5)</label> -->
+                        </div>
+                    </div>
+                </section>
+                <section class="sky-form" id="id-amenities-checkboxes">
+                    <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>AMENITITIES</h4>
+                    <div class="row row1 scroll-pane">
+                        <div class="col col-4">
+                            {% for amenity in feature_grid.amenities %}
+                            <label class="checkbox"><input type="checkbox" name="checkbox" onclick="featureClick()"><i></i>{{ amenity }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+                <section class="sky-form" id="id-beds-checkboxes">
+                    <h4><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>BEDS</h4>
+                    <div class="row row1 scroll-pane">
+                        <div class="col col-4">
+                            {% for bed in feature_grid.beds %}
+                            <label class="checkbox"><input type="checkbox" name="checkbox" onclick="featureClick()"><i></i>{{ bed }}</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+                <!---->
+                <link rel="stylesheet" type="text/css" href="{% static 'hotels/css/jquery-ui.css' %}">
+                <script type='text/javascript'>
+                    //<![CDATA[ 
+                    $(window).load(function() {
+                        $("#slider-range").slider({
+                            range: true,
+                            min: 0,
+                            max: 400000,
+                            values: [2500, 350000],
+                            slide: function(event, ui) {
+                                $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+                            }
+                        });
+                        $("#amount").val("$" + $("#slider-range").slider("values", 0) + " - $" + $("#slider-range").slider("values", 1));
+
+                    }); //]]>  
+                </script>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+{% endblock %}
+
+{% block otherscripts %}
+{% endblock %}

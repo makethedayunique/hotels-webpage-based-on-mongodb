@@ -1,0 +1,166 @@
+{% extends "hotels/products.html" %}
+
+{% load static %}
+
+{% block products_list %}
+<div class="col-md-9 grid-gallery" id="items-displayer">
+    
+{% for hotel in hotels %}
+<div class="col-md-4 grid-stn simpleCart_shelfItem" style="height: 20vw;">
+    <!-- normal -->
+    <div class="ih-item square">
+        <div class="bottom-2-top">
+            <div class="img"><img src="{{ hotel.picture_url }}" alt="/" class="gri-wid" style="width: 20vw;height: 15vw;"></div>
+            <div class="info">
+                <div class="pull-left styl-hdn">
+                    <h3>{{ hotel.name }}</h3>
+                </div>
+                <div class="pull-right styl-price">
+                    <p><a class="item_add"><span class=" item_price">${{ hotel.price }}/night</span></a></p>
+                    {% if hotel.review_scores_rating %}
+                    <div class="pull-right">
+                        <span class="item_price">
+                            <i class="bi bi-star-fill" style="font-size:1vw"></i>
+                        </span>
+                        <span style="font-size: 1vw;"><b>{{ hotel.review_scores_rating }}</b> ({{ hotel.number_of_reviews }}Reviews)</span>
+                    </div>
+                    {% endif %}
+                    <div class="pull-right" style="font-size: 1vw;">
+                        <b>{{ hotel.bedrooms }}Rooms/{{ hotel.beds }}Beds</b>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    <!-- end normal -->
+    <div class="quick-view">
+        <a href="single.html">Quick view</a>
+    </div>
+</div>
+{% endfor %}
+
+<input type="hidden" id="id_page_num" value="{{ pages }}">
+<div class="pagination col-md-9" id="id_pagination">
+    <a onclick="lastpage()">&laquo;</a>
+    <a class="active" onclick="setPage(1)">1</a>
+    {% for i in initial_pages %}
+    <a onclick="setPage({{ i|add:1 }})">{{ i|add:1 }}</a>
+    {% endfor %}
+    <a onclick="nextpage()">&raquo;</a>
+</div>
+
+<div class="clearfix"></div>
+
+</div>
+{% endblock %}
+
+{% block otherscripts %}
+<script>
+function nextpage() {
+    var batch_size = $("#id_pagination").children().length;
+    var lastpage = parseInt($("#id_pagination").children()[batch_size - 2].text);
+    var pages = parseInt($("#id_page_num").val());
+    var currpage = parseInt($(".active")[2].text);
+    if (currpage == lastpage - 9) {
+        currpage = currpage + 1;
+        getPage(currpage);
+    }
+    if (lastpage < pages) {
+        $("#id_pagination").children().each(function() {
+            if (this.text != "»" && this.text != "«") {
+                var currvalue = parseInt(this.text);
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                }
+                var newvalue = currvalue + 1;
+                if (newvalue == currpage) {
+                    $(this).addClass("active");
+                }
+                this.text = newvalue;
+                // delete the original function and append new function
+                // $(this).off('click');
+                // $(this).click(setPage(newvalue)); // may be problems here
+                $(this).attr("onclick", "setPage(" + newvalue + ")");
+            }
+        })
+    }
+}
+
+function lastpage() {
+    var firstpage = parseInt($("#id_pagination").children()[1].text);
+    var currpage = parseInt($(".active")[2].text);
+    if (currpage == firstpage + 9) {
+        currpage = currpage - 1;
+        getPage(currpage);
+    }
+    if (firstpage > 1) {
+        $("#id_pagination").children().each(function() {
+            if (this.text != "»" && this.text != "«") {
+                var currvalue = parseInt(this.text);
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                }
+                var newvalue = currvalue - 1;
+                if (newvalue == currpage) {
+                    $(this).addClass("active");
+                }
+                this.text = newvalue;
+                // delete the original function and append new function
+                // $(this).off('click');
+                // $(this).click(setPage(newvalue));
+                $(this).attr("onclick", "setPage(" + newvalue + ")");
+            }
+        })
+    }
+}
+
+function getPage(page) {
+    let features = filterByFeatures();
+    let country = features.country;
+    let city = features.city;
+    let property_type = features.selected_property;
+    let amenities = features.selected_amenities;
+    let beds = features.selected_beds;
+    let prices = features.selected_prices;
+    $.ajax({
+        type: "POST",
+        url: "/hotels/home",
+        data: {
+            "page" : page,
+            "csrfmiddlewaretoken" : getCSRFToken(),
+            "country" : country,
+            "city" : city,
+            "property_type" : property_type,
+            "amenities" : amenities,
+            "beds" : beds,
+            "prices" : prices
+        },
+        dataType: "json",
+        success: function(json) {
+            $(".grid-stn").remove();
+            $("#items-displayer").prepend(json["html"]);
+        },
+        error: function(json) {
+            $("#items-displayer").prepend(json["responseJSON"]["html"]);
+        }
+    });
+}
+
+function setPage(page) {
+    getPage(page);
+
+    $("#id_pagination").children().each(function() {
+        if (this.text != "»" && this.text != "«") {
+            var currvalue = parseInt(this.text);
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+            }
+            if (currvalue == page) {
+                $(this).addClass("active");
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
